@@ -24,5 +24,11 @@ namespace IOT_Backend.Controllers
         {
             return Ok(await UserService.Login(user));
         }
+        [HttpGet("auto_login")]
+        public async Task<ActionResult<ServiceResponse<UserDto>>> AutoLogin()
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
+            return Ok(await UserService.AutoLogin(token));
+        }
     }
 }

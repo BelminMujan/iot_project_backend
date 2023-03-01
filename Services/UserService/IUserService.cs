@@ -7,5 +7,6 @@ namespace IOT_Backend.Services.UserService
     {
         Task<ServiceResponse<UserDto>> Register(RegisterUserDto user);
         Task<ServiceResponse<UserDto>> Login(LoginUserDto user);
+        Task<ServiceResponse<UserDto>> AutoLogin(string token);
     }
 }

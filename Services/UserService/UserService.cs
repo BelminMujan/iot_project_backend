@@ -77,11 +77,12 @@ namespace IOT_Backend.Services.UserService
             await context.SaveChangesAsync();
 
             var tokenHandler = new JwtSecurityTokenHandler();
-                var securityKey = config.GetValue<string>("AppSettings:SecretKey");
-                var keyBytes = string.IsNullOrEmpty(securityKey) ? null : Encoding.ASCII.GetBytes(securityKey);
-                if (keyBytes == null) {
-                    throw new Exception("Security key is not configured.");
-                }            var tokenDescriptor = new SecurityTokenDescriptor{
+            var securityKey = config.GetValue<string>("AppSettings:SecretKey");
+            var keyBytes = string.IsNullOrEmpty(securityKey) ? null : Encoding.ASCII.GetBytes(securityKey);
+            if (keyBytes == null) {
+                throw new Exception("Security key is not configured.");
+            }            
+            var tokenDescriptor = new SecurityTokenDescriptor{
                 Subject = new ClaimsIdentity(new Claim[]{
                     new Claim(ClaimTypes.Name, newUser.Email)
                 }),
@@ -91,6 +92,35 @@ namespace IOT_Backend.Services.UserService
             var token = tokenHandler.CreateToken(tokenDescriptor);
             sr.Data = mapper.Map<UserDto>(newUser);
             sr.Token = tokenHandler.WriteToken(token);
+            return sr;
+        }
+
+        public async Task<ServiceResponse<UserDto>> AutoLogin(string token){
+            var sr = new ServiceResponse<UserDto>();
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var securityKey = config.GetValue<string>("AppSettings:SecretKey");
+            var keyBytes = string.IsNullOrEmpty(securityKey) ? null : Encoding.ASCII.GetBytes(securityKey);
+            if (keyBytes == null) {
+                throw new Exception("Security key is not configured.");
+            }
+            var username = string.Empty;
+            try {      
+
+                tokenHandler.ValidateToken(token, new TokenValidationParameters{
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+                var jwt = (JwtSecurityToken)validatedToken;
+                username = jwt.Claims.First(c=>c.Type == "unique_name").Value;
+                sr.Success = true;
+                sr.Message = "Login Successfull!";
+                sr.Data = mapper.Map<UserDto>(await context.User.FirstOrDefaultAsync(u=>u.Email == username));
+            } catch (System.Exception ex) {
+                throw new Exception(ex.Message);
+            }
             return sr;
         }
     }
