@@ -78,7 +78,7 @@ namespace IOT_Backend.Services.RoomService
             var sr = new ServiceResponse<GetRoomDto>();
             try
             {
-                var rr = sobe.FirstOrDefault(s => s.Id == room.Id);
+                var rr = await context.Room.FirstOrDefaultAsync(s => s.Id == room.Id);
                 if (rr is null)
                 {
                     throw new Exception($"Room with Id '{room.Id}' not found!");

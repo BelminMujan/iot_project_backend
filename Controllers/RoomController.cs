@@ -2,11 +2,13 @@
 using IOT_Backend.DTOs.Room;
 using IOT_Backend.Models;
 using IOT_Backend.Services.RoomService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IOT_Backend.Controllers
 {
 	[ApiController]
+	[Authorize]
 	[Route("api/[controller]")]
 	public class RoomController : ControllerBase
 	{

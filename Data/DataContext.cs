@@ -11,5 +11,6 @@ namespace IOT_Backend.Data
         }
 
         public DbSet<Room> Room { get; set; }
+        public DbSet<User> User { get; set; }
     }
 }
