@@ -1,3 +1,5 @@
+using IOT_Backend.DTOs.Room;
+
 namespace IOT_Backend.DTOs.User
 {
     public class UserDto

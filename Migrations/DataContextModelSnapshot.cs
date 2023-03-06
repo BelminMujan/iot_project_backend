@@ -24,16 +24,24 @@ namespace IOT_Backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    b.Property<double>("Area")
-                        .HasColumnType("double");
-
                     b.Property<bool>("HasSensor")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Title")
                         .HasColumnType("longtext");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("xAxis")
+                        .HasColumnType("double");
+
+                    b.Property<double>("yAxis")
+                        .HasColumnType("double");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Room");
                 });
@@ -63,6 +71,22 @@ namespace IOT_Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("IOT_Backend.Models.Room", b =>
+                {
+                    b.HasOne("IOT_Backend.Models.User", "User")
+                        .WithMany("Rooms")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("IOT_Backend.Models.User", b =>
+                {
+                    b.Navigation("Rooms");
                 });
 #pragma warning restore 612, 618
         }

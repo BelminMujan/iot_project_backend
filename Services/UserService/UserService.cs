@@ -42,7 +42,8 @@ namespace IOT_Backend.Services.UserService
                 }
                 var tokenDescriptor = new SecurityTokenDescriptor{
                     Subject = new ClaimsIdentity(new Claim[]{
-                        new Claim(ClaimTypes.Name, u.Email)
+                        new Claim(ClaimTypes.Name, u.Email),
+                        new Claim(ClaimTypes.NameIdentifier, u.Id.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddDays(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes),SecurityAlgorithms.HmacSha256Signature)
@@ -84,7 +85,8 @@ namespace IOT_Backend.Services.UserService
             }            
             var tokenDescriptor = new SecurityTokenDescriptor{
                 Subject = new ClaimsIdentity(new Claim[]{
-                    new Claim(ClaimTypes.Name, newUser.Email)
+                    new Claim(ClaimTypes.Name, newUser.Email),
+                    new Claim(ClaimTypes.NameIdentifier, newUser.Id.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes),SecurityAlgorithms.HmacSha256Signature)

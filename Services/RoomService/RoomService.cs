@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using AutoMapper;
 using IOT_Backend.Data;
 using IOT_Backend.DTOs.Room;
@@ -9,12 +10,6 @@ namespace IOT_Backend.Services.RoomService
 {
     public class RoomService : IRoomService
     {
-        private static List<Room> sobe = new List<Room>
-        {
-            new Room{ Id=1, Title="Dnevna soba", Area=20, HasSensor=true },
-            new Room{Id=2,Title="Spavaca soba", Area=16, HasSensor=true }
-        };
-
         private readonly IMapper _mapper;
         private readonly DataContext context;
 
@@ -30,6 +25,7 @@ namespace IOT_Backend.Services.RoomService
             var newRoom = _mapper.Map<Room>(room);
             newRoom.Id = context.Room.Any() ? Convert.ToInt32(context.Room.Max(s => s.Id)) + 1 : 1;
             context.Room.Add(newRoom);
+            newRoom.UserId = 2;
             context.SaveChanges();
             sr.Data = await context.Room.Select(s => _mapper.Map<GetRoomDto>(s)).ToListAsync();
             return sr;
@@ -58,10 +54,10 @@ namespace IOT_Backend.Services.RoomService
             return sr;
         }
 
-        public async Task<ServiceResponse<List<GetRoomDto>>> GetAllRooms()
+        public async Task<ServiceResponse<List<GetRoomDto>>> GetAllRooms(int uid)
         {
             var sr = new ServiceResponse<List<GetRoomDto>>();
-            sr.Data = await context.Room.Select(s => _mapper.Map<GetRoomDto>(s)).ToListAsync();
+            sr.Data = await context.Room.Where(r=>r.UserId == uid).Select(s => _mapper.Map<GetRoomDto>(s)).ToListAsync();
             return sr;
         }
 
@@ -83,7 +79,8 @@ namespace IOT_Backend.Services.RoomService
                 {
                     throw new Exception($"Room with Id '{room.Id}' not found!");
                 }
-                rr.Area = room.Area;
+                rr.xAxis = room.xAxis;
+                rr.yAxis = room.yAxis;
                 rr.Title = room.Title;
                 rr.HasSensor = room.HasSensor;
                 sr.Data = _mapper.Map<GetRoomDto>(rr);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using IOT_Backend.DTOs.Room;
 using IOT_Backend.Models;
 using IOT_Backend.Services.RoomService;
@@ -20,7 +21,9 @@ namespace IOT_Backend.Controllers
 
 		[HttpGet("all")]
 		public async Task<ActionResult<ServiceResponse<List<GetRoomDto>>>> Get() {
-			return Ok(await _roomService.GetAllRooms());	
+			var uid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await Task.Delay(3000);
+			return Ok(await _roomService.GetAllRooms(int.Parse(uid)));	
 		}
 
         [HttpGet("{id}")]
@@ -32,6 +35,7 @@ namespace IOT_Backend.Controllers
 		[HttpPost]
 		public async Task<ActionResult<ServiceResponse<List<GetRoomDto>>>> AddRoom(AddRoomDto room)
 		{
+			await Task.Delay(3000);
 			return Ok(await _roomService.AddRoom(room));
 		}
 

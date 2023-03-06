@@ -6,7 +6,7 @@ namespace IOT_Backend.Services.RoomService
 {
 	public interface IRoomService
 	{
-		Task<ServiceResponse<List<GetRoomDto>>> GetAllRooms();
+		Task<ServiceResponse<List<GetRoomDto>>> GetAllRooms(int uid);
 
 		Task<ServiceResponse<GetRoomDto>> GetRoomById(int id);
 
