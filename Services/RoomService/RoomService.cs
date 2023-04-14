@@ -74,6 +74,7 @@ namespace IOT_Backend.Services.RoomService
             var sr = new ServiceResponse<GetRoomDto>();
             try
             {
+                Console.WriteLine("updating room");
                 var rr = await context.Room.FirstOrDefaultAsync(s => s.Id == room.Id);
                 if (rr is null)
                 {
@@ -83,6 +84,7 @@ namespace IOT_Backend.Services.RoomService
                 rr.yAxis = room.yAxis;
                 rr.Title = room.Title;
                 rr.HasSensor = room.HasSensor;
+                context.SaveChanges();
                 sr.Data = _mapper.Map<GetRoomDto>(rr);
             }
             catch (Exception ex)

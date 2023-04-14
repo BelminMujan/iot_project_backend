@@ -1,3 +1,5 @@
+using System.Text.Json;
+using IOT_Backend.DTOs.Room;
 using IOT_Backend.DTOs.User;
 using IOT_Backend.Models;
 using IOT_Backend.Services.UserService;

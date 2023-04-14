@@ -1,21 +1,19 @@
-﻿using Microsoft.Extensions.Configuration;
-using MySqlConnector;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;using IOT_Backend.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using IOT_Backend.Services.RoomService;
 using IOT_Backend.Services.UserService;
 using IOT_Backend.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using IOT_Backend;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => {
@@ -46,6 +44,7 @@ builder.Services.AddDbContext<DataContext>(opt => opt.UseMySQL(builder.Configura
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
 var securityKey = builder.Configuration.GetValue<string>("AppSettings:SecretKey");
 var keyBytes = string.IsNullOrEmpty(securityKey) ? null : Encoding.ASCII.GetBytes(securityKey);
 if (keyBytes == null) {
@@ -63,7 +62,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 builder.Services.AddCors(opt=>{
     opt.AddPolicy("AllowLocalhost", builder => {
-        builder.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+        builder.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
     });
 });
 var app = builder.Build();
@@ -74,13 +73,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseWebSockets();
 app.UseHttpsRedirection();
 app.UseCors("AllowLocalhost");
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
-
+app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+        endpoints.MapHub<TemperatureHub>("/temperatureHub");
+    });
 app.Run();
 
