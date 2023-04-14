@@ -7,6 +7,8 @@ namespace IOT_Backend.DTOs.Room
         public double xAxis { get; set; }
         public double yAxis { get; set; }
         public bool HasSensor { get; set; }
+        public string SensorId {get; set; } = String.Empty;
+
     }
 }
 

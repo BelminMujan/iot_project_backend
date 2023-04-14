@@ -25,8 +25,10 @@ namespace IOT_Backend.Controllers
         [HttpPost("update_temperature")]
         public ActionResult UpdateTemperature(GetTemperatureDto temp)
         {
-			Console.WriteLine(temp.Value);
-			hubContext.Clients.All.SendAsync("TemperatureUpdate", temp.Value);
+            Console.WriteLine(temp?.Id);
+            Console.WriteLine(temp?.Value);
+            temp.Value = Math.Round(temp.Value, 1);
+			hubContext.Clients.All.SendAsync("TemperatureUpdate", temp);
             return Ok("Started temperature updates.");
         }
 

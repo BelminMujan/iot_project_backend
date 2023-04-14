@@ -9,6 +9,7 @@ namespace IOT_Backend.Models
 		public double yAxis { get; set; }
 		public bool HasSensor { get; set; }
 		public int UserId { get; set; }
+		public string SensorId {get; set; } = String.Empty;
 		public User? User { get; set; }
 	}
 }
